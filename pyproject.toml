@@ -1,0 +1,64 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "icloud-access-broker"
+version = "0.1.0"
+description = "Broker service for iCloud access workflows."
+readme = "README.md"
+requires-python = ">=3.14"
+license = "MIT"
+authors = [
+    { name = "Ondřej Winter" },
+]
+dependencies = [
+    "fastapi>=0.136.3",
+    "pydantic-settings>=2.14.1",
+    "uvicorn[standard]>=0.48.0",
+]
+
+[project.scripts]
+icloud-access-broker = "icloud_access_broker.adapters.input.cli:main"
+icloud-access-broker-api = "icloud_access_broker.adapters.input.http.__main__:main"
+
+[dependency-groups]
+dev = [
+    "hatchling>=1.27",
+    "httpx>=0.28.1",
+    "mypy>=1.10",
+    "pytest>=8",
+    "pytest-cov>=6",
+    "ruff>=0.4",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/icloud_access_broker"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "COM812", # trailing comma — conflicts with ruff formatter
+    "ISC001", # implicit string concat — conflicts with ruff formatter
+    "D1",     # missing docstrings — too noisy for early development
+    "ANN",    # type annotations — redundant with mypy strict
+    "TD",     # TODO comment format
+    "FIX",    # fixme comments
+]
+
+[tool.ruff.lint.per-file-ignores]
+"src/icloud_access_broker/adapters/input/cli.py" = ["T201"]
+"tests/**/*.py" = ["S101"]
+
+[tool.mypy]
+python_version = "3.14"
+strict = true
+files = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=src --cov-report=term-missing"
